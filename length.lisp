@@ -82,7 +82,7 @@ to read past the end of the sequence.")
    (declare (fixnum end i))
    (when (> i end)
      (signal-encoding-error format "This sequence can't be decoded ~
-using ~A as it is too short.  ~A octet~:P missing at then end."
+using ~A as it is too short.  ~A octet~:P missing at the end."
                             (external-format-name format)
                             (- i end))))
   (:method ((format flexi-utf-16-format) start end i)
