@@ -68,5 +68,5 @@
 
 (defmethod perform ((o test-op) (c (eql (find-system 'flexi-streams))))
   (operate 'load-op 'flexi-streams-test)
-  (funcall (intern (symbol-name :run-tests)
+  (funcall (intern (symbol-name :run-all-tests)
                    (find-package :flexi-streams-test))))
