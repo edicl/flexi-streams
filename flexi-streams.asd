@@ -1,5 +1,5 @@
 ;;; -*- Mode: LISP; Syntax: COMMON-LISP; Package: CL-USER; Base: 10 -*-
-;;; $Header: /usr/local/cvsrep/flexi-streams/flexi-streams.asd,v 1.74 2008/05/30 08:38:21 edi Exp $
+;;; $Header: /usr/local/cvsrep/flexi-streams/flexi-streams.asd,v 1.76 2008/07/25 09:56:58 edi Exp $
 
 ;;; Copyright (c) 2005-2008, Dr. Edmund Weitz.  All rights reserved.
 
@@ -35,7 +35,7 @@
 (in-package :flexi-streams-system)
 
 (defsystem :flexi-streams
-  :version "1.0.3"
+  :version "1.0.4"
   :serial t
   :components ((:file "packages")
                (:file "mapping")
