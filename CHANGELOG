@@ -1,3 +1,7 @@
+Version 1.0.5
+2008-08-01
+Export RUN-ALL-TESTS instead of RUN-TESTS (caught by Nick Allen)
+
 Version 1.0.4
 2008-07-25
 Cosmetic surgery on test suite

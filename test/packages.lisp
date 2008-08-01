@@ -1,5 +1,5 @@
 ;;; -*- Mode: LISP; Syntax: COMMON-LISP; Package: CL-USER; Base: 10 -*-
-;;; $Header: /usr/local/cvsrep/flexi-streams/test/packages.lisp,v 1.6 2008/05/17 16:38:26 edi Exp $
+;;; $Header: /usr/local/cvsrep/flexi-streams/test/packages.lisp,v 1.8 2008/08/01 10:12:43 edi Exp $
 
 ;;; Copyright (c) 2006-2008, Dr. Edmund Weitz.  All rights reserved.
 
@@ -36,4 +36,4 @@
                 :with-rebinding
                 :char*
                 :normalize-external-format)
-  (:export :run-tests))
+  (:export :run-all-tests))
