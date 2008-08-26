@@ -1,5 +1,5 @@
 ;;; -*- Mode: LISP; Syntax: COMMON-LISP; Package: FLEXI-STREAMS; Base: 10 -*-
-;;; $Header: /usr/local/cvsrep/flexi-streams/decode.lisp,v 1.34 2008/08/26 00:38:06 edi Exp $
+;;; $Header: /usr/local/cvsrep/flexi-streams/decode.lisp,v 1.35 2008/08/26 10:59:22 edi Exp $
 
 ;;; Copyright (c) 2005-2008, Dr. Edmund Weitz.  All rights reserved.
 
@@ -92,6 +92,7 @@ a form \(UNGET <form>) which has to be replaced by the correct code to
                   (buffer-pos 0)
                   (buffer-end 0)
                   (index start)
+                  donep
                   ;; whether we will later be able to rewind the stream if
                   ;; needed (to get rid of unused octets in the buffer)
                   (can-rewind-p (maybe-rewind stream 0))
@@ -120,6 +121,8 @@ rewind afterwards)."
                     (fill-buffer (end)
                       "Tries to fill the buffer from BUFFER-POS to END and
 returns NIL if the buffer doesn't contain any new data."
+                      (when donep
+                        (return-from fill-buffer nil))
                       ;; put data from octet stack into buffer if there is any
                       (loop
                        (when (>= buffer-pos end)
@@ -132,6 +135,9 @@ returns NIL if the buffer doesn't contain any new data."
                       (setq buffer-end (read-sequence buffer stream
                                                       :start buffer-pos
                                                       :end end))
+                      ;; we reached EOF, so we remember this
+                      (when (< buffer-end end)
+                        (setq donep t))
                       ;; BUFFER-POS is only greater than zero if the buffer
                       ;; already contains unread data from the octet stack
                       ;; (see below), so we test for ZEROP here and do /not/

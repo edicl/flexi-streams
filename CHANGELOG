@@ -1,3 +1,7 @@
+Version 1.0.7
+2008-08-26
+Don't read a second time if the first READ-SEQUENCE already reached EOF (Drakma bug report by Stas Boukarev)
+
 Version 1.0.6
 2008-08-25
 Don't use a reserve if we can't rewind the stream (Drakma bug report by Stas Boukarev)
