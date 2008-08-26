@@ -1,5 +1,5 @@
 ;;; -*- Mode: LISP; Syntax: COMMON-LISP; Package: FLEXI-STREAMS; Base: 10 -*-
-;;; $Header: /usr/local/cvsrep/flexi-streams/decode.lisp,v 1.33 2008/05/30 09:04:15 edi Exp $
+;;; $Header: /usr/local/cvsrep/flexi-streams/decode.lisp,v 1.34 2008/08/26 00:38:06 edi Exp $
 
 ;;; Copyright (c) 2005-2008, Dr. Edmund Weitz.  All rights reserved.
 
@@ -73,7 +73,7 @@ format and does the real work for OCTETS-TO-STRING."))
   "Non-hygienic utility macro which defines methods for READ-SEQUENCE*
 and OCTETS-TO-STRING* for the class FORMAT-CLASS.  BODY is described
 in the docstring of DEFINE-CHAR-ENCODERS but can additionally contain
-a form (UNGET <form>) which has to be replaced by the correct code to
+a form \(UNGET <form>) which has to be replaced by the correct code to
 `unread' the octets for the character designated by <form>."
   (let* ((body `((block char-decoder
                    (locally
@@ -101,8 +101,8 @@ a form (UNGET <form>) which has to be replaced by the correct code to
                   ;; performance-wise to make RESERVE significantly bigger
                   ;; (and thus put potentially a lot more octets into
                   ;; OCTET-STACK), especially for UTF-8
-                  (reserve (cond ((not (floatp factor)) 0)
-                                 ((not can-rewind-p) (* 2 integer-factor))
+                  (reserve (cond ((or (not (floatp factor))
+                                      (not can-rewind-p)) 0)
                                  (t (ceiling (* (- factor integer-factor) (- end start)))))))
              (declare (fixnum buffer-pos buffer-end index integer-factor reserve)
                       (boolean can-rewind-p))
