@@ -47,7 +47,8 @@ and the other Lisps."
 
 (deftype char-code-integer ()
   "The subtype of integers which can be returned by the function CHAR-CODE."
-  '(integer 0 #.(1- char-code-limit)))
+  #-:cmu '(integer 0 #.(1- char-code-limit))
+  #+:cmu '(integer 0 65533))
 
 (deftype code-point ()
   "The subtype of integers that's just big enough to hold all Unicode

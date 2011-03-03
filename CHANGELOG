@@ -1,3 +1,5 @@
+Fix for CMUCL (Raymond Toy, Xu Jingtao)
+
 Version 1.0.7
 2008-08-26
 Don't read a second time if the first READ-SEQUENCE already reached EOF (Drakma bug report by Stas Boukarev)
