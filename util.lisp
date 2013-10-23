@@ -190,9 +190,9 @@ performance."
 
 (defun maybe-rewind (stream octets)
   "Tries to `rewind' the \(binary) stream STREAM by OCTETS octets.
-Returns a true value if it succeeds."
+Returns T if it succeeds, otherwise NIL."
   (when-let (position (file-position stream))
-    (file-position stream (- position octets))))
+    (if (file-position stream (- position octets)) t nil)))
 
 (defmacro logand* (x y)
   "Solely for optimization purposes.  Some Lisps need it, some don't."
