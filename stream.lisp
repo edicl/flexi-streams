@@ -231,7 +231,9 @@ more input is available."
                ((input-stream-p stream)
                 'flexi-input-stream)
                ((output-stream-p stream)
-                'flexi-output-stream))
+                'flexi-output-stream)
+               (t
+                (error "~S is neither an input nor an output stream." stream)))
          :stream stream
          :flexi-stream-external-format external-format
          (sans args :external-format)))
