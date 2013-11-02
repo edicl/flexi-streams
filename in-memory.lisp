@@ -219,7 +219,7 @@ is reached."
   (with-accessors ((vector vector-stream-vector))
       stream
     (loop for index of-type fixnum from start below end
-          do (vector-push-extend (elt sequence index) vector))
+          do (vector-push-extend (transform-octet stream (elt sequence index)) vector))
     sequence))
 
 (defmethod stream-file-position ((stream vector-input-stream))
