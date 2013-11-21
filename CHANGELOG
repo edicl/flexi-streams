@@ -1,3 +1,7 @@
+Version 1.0.9
+2013-11-21
+Dummy release without any functional changes
+
 Version 1.0.8
 Make write-sequence call transform-octet (Jason Miller)
 Fix for CMUCL (Raymond Toy, Xu Jingtao)

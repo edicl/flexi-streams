@@ -35,7 +35,7 @@
 (in-package :flexi-streams-system)
 
 (defsystem :flexi-streams
-  :version "1.0.8"
+  :version "1.0.9"
   :serial t
   :components ((:file "packages")
                (:file "mapping")
