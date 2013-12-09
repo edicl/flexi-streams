@@ -1,3 +1,7 @@
+Version 1.0.10
+2013-12-09
+Fix file-position errors (markv)
+
 Version 1.0.9
 2013-11-21
 Dummy release without any functional changes
