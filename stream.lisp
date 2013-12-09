@@ -109,14 +109,16 @@ stream."
   (declare #.*standard-optimize-settings*)
   (with-accessors ((stream flexi-stream-stream))
       stream
-    (stream-file-position stream)))
+    (file-position stream)))
 
 (defmethod (setf stream-file-position) (position-spec (stream flexi-stream))
   "Dispatch to method for underlying stream."
   (declare #.*standard-optimize-settings*)
-  (with-accessors ((stream flexi-stream-stream))
+  (with-accessors ((underlying-stream flexi-stream-stream))
       stream
-    (setf (stream-file-position stream) position-spec)))
+    (if (file-position underlying-stream position-spec)
+        (setf (flexi-stream-position stream) (file-position underlying-stream))
+          nil)))
 
 (defclass flexi-output-stream (flexi-stream fundamental-binary-output-stream
                                             fundamental-character-output-stream)
