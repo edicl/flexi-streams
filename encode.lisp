@@ -85,7 +85,8 @@ BODY see the docstring of DEFINE-CHAR-ENCODERS."
                   (factor (encoding-factor format))
                   ;; we don't want arbitrarily large buffer, do we?
                   (buffer-size (min +buffer-size+ (ceiling (* factor (- end start)))))
-                  (buffer (make-octet-buffer buffer-size)))
+                  (buffer (make-octet-buffer buffer-size))
+                  (underlying-stream (flexi-stream-stream stream)))
              (declare (fixnum buffer-pos buffer-size)
                       (boolean octet-seen-p)
                       (type (array octet *) buffer))
@@ -93,7 +94,7 @@ BODY see the docstring of DEFINE-CHAR-ENCODERS."
                           `(write-octet ,form)))
                (labels ((flush-buffer ()
                           "Sends all octets in BUFFER to the underlying stream."
-                          (write-sequence buffer stream :end buffer-pos)
+                          (write-sequence buffer underlying-stream :end buffer-pos)
                           (setq buffer-pos 0))
                         (write-octet (octet)
                           "Adds one octet to the buffer and flushes it if necessary."
