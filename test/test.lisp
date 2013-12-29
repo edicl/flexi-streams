@@ -658,6 +658,24 @@ the external format EXTERNAL-FORMAT."
                      do (loop for (file-name . external-format) in (create-file-variants file-name symbol)
                               do (test-one-file file-name external-format)))))))
 
+(defun column-tests (&key verbose)
+  (with-test-suite ("STREAM-LINE-COLUMN tests" :show-progress-p (not verbose))
+    (let* ((binary-stream (flexi-streams:make-in-memory-output-stream))
+           (stream (flexi-streams:make-flexi-stream binary-stream :external-format :iso-8859-1)))
+      (write-sequence "hello" stream)
+      (format stream "~12Tworld")
+      (finish-output stream)
+      (check (string= "hello       world"
+                      (flexi-streams:octets-to-string
+                       (flexi-streams::vector-stream-vector binary-stream)
+                       :external-format :iso-8859-1)))
+      (terpri stream)
+      (check (= 0 (flexi-stream-column stream)))
+      (write-sequence "abc" stream)
+      (check (= 3 (flexi-stream-column stream)))
+      (terpri stream)
+      (check (= 0 (flexi-stream-column stream))))))
+
 (defun run-all-tests (&key verbose)
   "Runs all tests for FLEXI-STREAMS and returns a true value iff all
 tests succeeded.  VERBOSE is interpreted by the individual test suites
@@ -671,6 +689,7 @@ above."
       (run-test-suite (sequence-tests :verbose verbose))
       (run-test-suite (error-handling-tests :verbose verbose))
       (run-test-suite (unread-char-tests :verbose verbose))
+      (run-test-suite (column-tests :verbose verbose))
       (format t "~2&~:[Some tests failed~;All tests passed~]." successp)
       successp)))
             
