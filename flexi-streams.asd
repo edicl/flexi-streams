@@ -37,6 +37,7 @@
 (defsystem :flexi-streams
   :version "1.0.11"
   :serial t
+  :description "Flexible bivalent streams for Common Lisp"
   :components ((:file "packages")
                (:file "mapping")
                (:file "ascii")
