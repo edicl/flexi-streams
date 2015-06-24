@@ -109,12 +109,11 @@ are discarded \(that is, the body is an implicit PROGN)."
 external format, e.g. :LATIN1 will be converted to :ISO-8859-1.
 Also checks if there is an external format with that name and
 signals an error otherwise."
-  (let ((real-name (or (cdr (assoc name +name-map+
-                                   :test #'eq))
-                       name)))
-    (unless (find real-name +name-map+
-                  :test #'eq
-                  :key #'cdr)
+  (let ((real-name (cdr (find name flex::+name-map+
+                              :test (lambda (item pair)
+                                      (or (string-equal item (cdr pair))
+                                          (string-equal item (car pair))))))))
+    (unless real-name
       (error 'external-format-error
              :format-control "~S is not known to be a name for an external format."
              :format-arguments (list name)))

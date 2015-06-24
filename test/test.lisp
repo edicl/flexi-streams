@@ -676,6 +676,38 @@ the external format EXTERNAL-FORMAT."
       (terpri stream)
       (check (= 0 (flexi-stream-column stream))))))
 
+(defun make-external-format-tests (&key verbose)
+  (with-test-suite ("MAKE-EXTERNAL-FORMAT tests" :show-progress-p (not verbose))
+    (flet ((make-case (real-name &key id name)
+           (list real-name
+                 :id id
+                 :input-names (list name (string-upcase name) (string-downcase name)))))
+      (let ((cases (append '((:utf-8 :id nil
+                                     :input-names (:utf8 :utf-8 "utf8" "utf-8" "UTF8" "UTF-8")))
+                           (loop for (name . real-name) in +name-map+
+                                 unless (member :code-page (list name real-name))
+                                   append (list (make-case real-name :name name)
+                                                (make-case real-name :name real-name)))
+                           (loop for (name . definition) in +shortcut-map+
+                                 for key = (car definition)
+                                 for id = (getf (cdr definition) :id)
+                                 for expected = (or (cdr (assoc key +name-map+)) key)
+                                 collect (make-case expected :id id :name name)))))
+
+        (loop for (expected-name . kwargs) in cases
+              for id = (getf kwargs :id)
+              for input-names = (getf kwargs :input-names)
+              do (loop for name in input-names
+                       for ext-format = (make-external-format name)
+                       do (check (eq (flex:external-format-name ext-format) expected-name))
+                       when id
+                         do (check (= (flex:external-format-id ext-format) id))))))
+
+    (let ((error-cases '("utf-8 " " utf-8" "utf8 " " utf8" "utf89" :utf89 utf89 :code-page nil)))
+      (loop for input-name in error-cases
+            do (with-expected-error (external-format-error)
+                 (make-external-format input-name))))))
+
 (defun run-all-tests (&key verbose)
   "Runs all tests for FLEXI-STREAMS and returns a true value iff all
 tests succeeded.  VERBOSE is interpreted by the individual test suites
@@ -690,6 +722,7 @@ above."
       (run-test-suite (error-handling-tests :verbose verbose))
       (run-test-suite (unread-char-tests :verbose verbose))
       (run-test-suite (column-tests :verbose verbose))
+      (run-test-suite (make-external-format-tests :verbose verbose))
       (format t "~2&~:[Some tests failed~;All tests passed~]." successp)
       successp)))
             
