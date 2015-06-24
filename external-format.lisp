@@ -320,7 +320,7 @@ of a Windows code page \(and ignored for other encodings)."
   (declare #.*standard-optimize-settings*)
   ;; the keyword arguments are only there for arglist display in the IDE
   (declare (ignore id little-endian))
-  (let ((shortcut-args (cdr (assoc name +shortcut-map+))))
+  (let ((shortcut-args (cdr (assoc name +shortcut-map+ :test #'string-equal))))
     (cond (shortcut-args
            (apply #'make-external-format%
                   (append shortcut-args
