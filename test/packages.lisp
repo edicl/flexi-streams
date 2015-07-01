@@ -35,5 +35,7 @@
                 :with-unique-names
                 :with-rebinding
                 :char*
-                :normalize-external-format)
+                :normalize-external-format
+                :+name-map+
+                :+shortcut-map+)
   (:export :run-all-tests))
