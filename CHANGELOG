@@ -1,3 +1,7 @@
+Version 1.0.15
+2015-07-01
+Support strings as external-format name specifiers (LispAlien)
+
 Version 1.0.14
 2014-11-28
 update support information (Hans Huebner)

@@ -35,7 +35,7 @@
 (in-package :flexi-streams-system)
 
 (defsystem :flexi-streams
-  :version "1.0.14"
+  :version "1.0.15"
   :serial t
   :description "Flexible bivalent streams for Common Lisp"
   :components ((:file "packages")
