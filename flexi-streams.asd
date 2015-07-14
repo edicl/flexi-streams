@@ -34,6 +34,11 @@
 
 (in-package :flexi-streams-system)
 
+;;; Maybe it can be made work for some encodings
+(when (<= char-code-limit 65533)
+  (error "flexi-streams doesn't work on implementations with CHAR-CODE-LIMIT (~a) less than 65533"
+         char-code-limit))
+
 (defsystem :flexi-streams
   :version "1.0.15"
   :serial t
