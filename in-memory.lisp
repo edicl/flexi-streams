@@ -361,9 +361,7 @@ AS-LIST is true the return value is coerced to a list."
   "Returns the current length of the underlying vector of the
 IN-MEMORY output stream STREAM."
   (declare (optimize speed))
-  (with-accessors ((vector vector-stream-vector))
-      stream
-    (length (the (simple-array * (*)) vector))))
+  (length (the vector (vector-stream-vector stream))))
 
 (defmacro with-input-from-sequence ((var sequence &key start end transformer) 
                                     &body body)
