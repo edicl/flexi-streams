@@ -32,7 +32,6 @@
 (defvar *standard-optimize-settings*
   '(optimize
     speed
-    (safety 0)
     (space 0)
     (debug 1)
     (compilation-speed 0))
@@ -41,7 +40,6 @@
 (defvar *fixnum-optimize-settings*
   '(optimize
     speed
-    (safety 0)
     (space 0)
     (debug 1)
     (compilation-speed 0)
