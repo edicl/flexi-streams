@@ -1,3 +1,9 @@
+Version 1.0.16
+2016-12-19
+Remove (safety 0). (Stas Boukarev)
+Don't assume simple vectors in output-stream-sequence-length. (Stas Boukarev)
+Produce an error when loaded on implementations without unicode. (Stas Boukarev)
+
 Version 1.0.15
 2015-07-01
 Support strings as external-format name specifiers (LispAlien)

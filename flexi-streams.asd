@@ -40,7 +40,7 @@
          char-code-limit))
 
 (defsystem :flexi-streams
-  :version "1.0.15"
+  :version "1.0.16"
   :serial t
   :description "Flexible bivalent streams for Common Lisp"
   :components ((:file "packages")
