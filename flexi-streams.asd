@@ -43,6 +43,7 @@
   :version "1.0.16"
   :serial t
   :description "Flexible bivalent streams for Common Lisp"
+  :license "BSD-2-Clause"
   :components ((:file "packages")
                (:file "mapping")
                (:file "ascii")
