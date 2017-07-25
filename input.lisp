@@ -284,14 +284,11 @@ equals PEEK-TYPE is returned.  EOF-ERROR-P and EOF-VALUE are
 interpreted as usual."
   (declare #.*standard-optimize-settings*)
   (loop for octet = (read-byte flexi-input-stream eof-error-p :eof)
-        until (cond ((null peek-type))
-                    ((eql octet :eof))
+        until (cond ((eq octet :eof)
+                     (return eof-value))
+                    ((null peek-type))
                     ((eq peek-type t)
                      (plusp octet))
-                    (t (= octet peek-type)))
-        finally (cond
-                  ((eql octet :eof)
-                   (return eof-value))
-                  (t
-                   (unread-byte octet flexi-input-stream)
-                   (return octet)))))
+                    ((= octet peek-type)))
+        finally (unread-byte octet flexi-input-stream)
+                (return octet)))
