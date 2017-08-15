@@ -708,6 +708,15 @@ the external format EXTERNAL-FORMAT."
             do (with-expected-error (external-format-error)
                  (make-external-format input-name))))))
 
+(defun peek-byte-tests (&key verbose)
+  (with-test-suite ("PEEK-BYTE tests" :show-progress-p (not verbose))
+    (flex:with-input-from-sequence (input #(0 1 2))
+      (let ((stream (flex:make-flexi-stream input)))
+        ;; If peek-type was specified as 2 we need to peek the first octect equal to 2
+        (check (= 2 (flex::peek-byte stream 2 nil 1)))
+        ;; also, the octet should be unread to the stream so that we can peek it again
+        (check (= 2 (flex::peek-byte stream nil nil nil)))))))
+
 (defun run-all-tests (&key verbose)
   "Runs all tests for FLEXI-STREAMS and returns a true value iff all
 tests succeeded.  VERBOSE is interpreted by the individual test suites
@@ -723,6 +732,6 @@ above."
       (run-test-suite (unread-char-tests :verbose verbose))
       (run-test-suite (column-tests :verbose verbose))
       (run-test-suite (make-external-format-tests :verbose verbose))
+      (run-test-suite (peek-byte-tests :verbose verbose))
       (format t "~2&~:[Some tests failed~;All tests passed~]." successp)
       successp)))
-            
