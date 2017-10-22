@@ -131,6 +131,44 @@ associated vector."))
   (declare #.*standard-optimize-settings*)
   'octet)
 
+(defgeneric peek-byte (stream &optional peek-type eof-err-p eof-value)
+  (:documentation
+   "PEEK-BYTE is like PEEK-CHAR, i.e. it returns a byte from the stream without
+   actually removing it. If PEEK-TYPE is NIL the next byte is returned, if
+   PEEK-TYPE is T, the next byte which is not 0 is returned, if PEEK-TYPE is an
+   byte, the next byte which equals PEEK-TYPE is returned. EOF-ERROR-P and
+   EOF-VALUE are interpreted as usual."))
+
+(defmethod peek-byte ((stream vector-input-stream) &optional peek-type (eof-error-p t) eof-value)
+  "Returns a byte from VECTOR-INPUT-STREAM without actually removing it."
+  (declare #.*standard-optimize-settings*)
+  (let ((index (vector-stream-index stream)))
+    (loop :for byte = (read-byte stream eof-error-p :eof)
+       :for new-index :from index
+       :until (cond ((eq byte :eof)
+                     (return eof-value))
+                    ((null peek-type))
+                    ((eq peek-type 't)
+                     (plusp byte))
+                    ((= byte peek-type)))
+       :finally (setf (slot-value stream 'index) new-index)
+                (return byte))))
+
+(defmethod peek-byte ((stream list-input-stream) &optional peek-type (eof-error-p t) eof-value)
+  "Returns a byte from VECTOR-INPUT-STREAM without actually removing it."
+  (declare #.*standard-optimize-settings*)
+  (loop
+     :for list-elem = (car (list-stream-list stream))
+     :for byte = (read-byte stream eof-error-p :eof)
+     :until (cond ((eq byte :eof)
+                   (return eof-value))
+                  ((null peek-type))
+                  ((eq peek-type 't)
+                   (plusp byte))
+                  ((= byte peek-type)))
+     :finally (push list-elem (list-stream-list stream))
+              (return byte)))
+
 (defmethod transform-octet ((stream in-memory-stream) octet)
   "Applies the transformer of STREAM to octet and returns the result."
   (declare #.*standard-optimize-settings*)
