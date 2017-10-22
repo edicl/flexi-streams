@@ -126,10 +126,14 @@ associated vector."))
     (error 'in-memory-stream-closed-error
            :stream stream)))
 
-(defmethod stream-element-type ((stream in-memory-stream))
-  "The element type is always OCTET by definition."
-  (declare #.*standard-optimize-settings*)
-  'octet)
+(defmethod stream-element-type ((stream vector-input-stream))
+  "This returns actual array type of the underlying vector."
+  (array-element-type (vector-stream-vector stream)))
+
+(defmethod stream-element-type ((stream list-input-stream))
+  "This returns 't. Lists do not have element type."
+  't)
+
 
 (defmethod transform-octet ((stream in-memory-stream) octet)
   "Applies the transformer of STREAM to octet and returns the result."
