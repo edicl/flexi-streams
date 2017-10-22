@@ -159,14 +159,16 @@ not 0 is returned, if PEEK-TYPE is an byte, the next byte which
 equals PEEK-TYPE is returned.  EOF-ERROR-P and EOF-VALUE are
 interpreted as usual."
   (declare #.*standard-optimize-settings*)
-  (loop :for byte = (read-byte stream eof-error-p :eof)
+  (loop
+     :for list-elem = (car (list-stream-list stream))
+     :for byte = (read-byte stream eof-error-p :eof)
      :until (cond ((eq byte :eof)
                    (return eof-value))
                   ((null peek-type))
                   ((eq peek-type 't)
                    (plusp byte))
                   ((= byte peek-type)))
-     :finally (push byte (list-stream-list stream))
+     :finally (push list-elem (list-stream-list stream))
               (return byte)))
 
 (defmethod transform-octet ((stream in-memory-stream) octet)
