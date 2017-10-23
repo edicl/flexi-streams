@@ -131,6 +131,14 @@ associated vector."))
   (declare #.*standard-optimize-settings*)
   'octet)
 
+(defgeneric peek-byte (stream &optional peek-type eof-err-p eof-value)
+  (:documentation
+   "PEEK-BYTE is like PEEK-CHAR, i.e. it returns a byte from the stream without
+   actually removing it. If PEEK-TYPE is NIL the next byte is returned, if
+   PEEK-TYPE is T, the next byte which is not 0 is returned, if PEEK-TYPE is an
+   byte, the next byte which equals PEEK-TYPE is returned. EOF-ERROR-P and
+   EOF-VALUE are interpreted as usual."))
+
 (defmethod peek-byte ((stream vector-input-stream) &optional peek-type (eof-error-p t) eof-value)
   "Returns a byte from VECTOR-INPUT-STREAM without actually removing it."
   (declare #.*standard-optimize-settings*)
