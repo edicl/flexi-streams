@@ -304,7 +304,7 @@ Each octet returned will be transformed in turn by the optional
 TRANSFORMER function."
   (declare #.*standard-optimize-settings*)
   (make-instance 'vector-input-stream
-                 :vector vector
+                 :vector (coerce vector '(vector octet))
                  :index start
                  :end end
                  :transformer transformer))
@@ -318,7 +318,10 @@ octet returned will be transformed in turn by the optional
 TRANSFORMER function."
   (declare #.*standard-optimize-settings*)
   (make-instance 'list-input-stream
-                 :list (subseq list start end)
+                 :list (loop for elt in (nthcdr start list)
+                             repeat (- end start)
+                             do (check-type elt octet)
+                             collect elt)
                  :transformer transformer))
 
 (defun make-output-vector (&key (element-type 'octet))
