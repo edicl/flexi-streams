@@ -273,15 +273,19 @@ READ-BYTE."
     (decf (the integer position))
     (push byte octet-stack)
     nil))
-    
+
+
+(defgeneric peek-byte (stream &optional peek-type eof-err-p eof-value)
+  (:documentation
+   "PEEK-BYTE is like PEEK-CHAR, i.e. it returns a byte from the stream without
+   actually removing it. If PEEK-TYPE is NIL the next byte is returned, if
+   PEEK-TYPE is T, the next byte which is not 0 is returned, if PEEK-TYPE is an
+   byte, the next byte which equals PEEK-TYPE is returned. EOF-ERROR-P and
+   EOF-VALUE are interpreted as usual."))
+
 (defmethod peek-byte ((flexi-input-stream flexi-input-stream)
                       &optional peek-type (eof-error-p t) eof-value)
-  "PEEK-BYTE is like PEEK-CHAR, i.e. it returns an octet from
-FLEXI-INPUT-STREAM without actually removing it.  If PEEK-TYPE is NIL
-the next octet is returned, if PEEK-TYPE is T, the next octet which is
-not 0 is returned, if PEEK-TYPE is an octet, the next octet which
-equals PEEK-TYPE is returned.  EOF-ERROR-P and EOF-VALUE are
-interpreted as usual."
+  "Returns an octet from FLEXI-INPUT-STREAM without actually removing it."
   (declare #.*standard-optimize-settings*)
   (loop for octet = (read-byte flexi-input-stream eof-error-p :eof)
         until (cond ((eq octet :eof)
