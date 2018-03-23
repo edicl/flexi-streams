@@ -220,7 +220,7 @@ abort the LOOP iteration below."
                                        ;; computation has been done
                                        ;; for us already
                                        (symbol-macrolet ((octet-getter (prog1
-                                                                           (aref sequence i)
+                                                                           (the octet (aref sequence i))
                                                                          (incf i))))
                                          ,@body))))
                  finally (return string)))))))
