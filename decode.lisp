@@ -215,13 +215,10 @@ abort the LOOP iteration below."
                  do (setf (schar string j)
                           (code-char (macrolet ((unget (form)
                                                   `(decf i (character-length format ,form))))
-                                       ;; we don't need to test for
-                                       ;; the end of SEQUENCE as the
-                                       ;; computation has been done
-                                       ;; for us already
-                                       (symbol-macrolet ((octet-getter (prog1
-                                                                           (the octet (aref sequence i))
-                                                                         (incf i))))
+                                       (symbol-macrolet ((octet-getter (and (< i end)
+                                                                            (prog1
+                                                                                (the octet (aref sequence i))
+                                                                              (incf i)))))
                                          ,@body))))
                  finally (return string)))))))
 
