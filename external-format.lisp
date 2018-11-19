@@ -225,15 +225,15 @@ external format."
       external-format
     (multiple-value-setq (encoding-hash decoding-table)
         (cond ((ascii-name-p name)
-               (values +ascii-hash+ +ascii-table+))
+               (values *ascii-hash* *ascii-table*))
               ((koi8-r-name-p name)
-               (values +koi8-r-hash+ +koi8-r-table+))
+               (values *koi8-r-hash* *koi8-r-table*))
               ((iso-8859-name-p name)
-               (values (cdr (assoc name +iso-8859-hashes+ :test #'eq))                       
-                       (cdr (assoc name +iso-8859-tables+ :test #'eq))))
+               (values (cdr (assoc name *iso-8859-hashes* :test #'eq))
+                       (cdr (assoc name *iso-8859-tables* :test #'eq))))
               ((code-page-name-p name)
-               (values (cdr (assoc id +code-page-hashes+))                       
-                       (cdr (assoc id +code-page-tables+))))))))
+               (values (cdr (assoc id *code-page-hashes*))
+                       (cdr (assoc id *code-page-tables*))))))))
 
 (defun external-format-class-name (real-name &key eol-style little-endian id)
   "Given the initargs for a general external format returns the name

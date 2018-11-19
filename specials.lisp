@@ -47,9 +47,9 @@
   "Like *STANDARD-OPTIMIZE-SETTINGS*, but \(on LispWorks) with all
 arithmetic being fixnum arithmetic.")
 
-(defconstant +lf+ (char-code #\Linefeed))
+(defconstant +lf+ #.(char-code #\Linefeed))
 
-(defconstant +cr+ (char-code #\Return))
+(defconstant +cr+ #.(char-code #\Return))
 
 (defvar *current-unreader* nil
   "A unary function which might be called to `unread' a character
@@ -154,23 +154,23 @@ the code is compiled on.")
 \(as if by a USE-VALUE restart) whenever during reading an error of
 type FLEXI-STREAM-ENCODING-ERROR would have been signalled otherwise.")
 
-(defconstant +iso-8859-hashes+
-  (loop for (name . table) in +iso-8859-tables+
+(defparameter *iso-8859-hashes*
+  (loop for (name . table) in *iso-8859-tables*
         collect (cons name (invert-table table)))
   "An alist which maps names for ISO-8859 encodings to hash
 tables which map character codes to the corresponding octets.")
 
-(defconstant +code-page-hashes+
-  (loop for (id . table) in +code-page-tables+
+(defparameter *code-page-hashes*
+  (loop for (id . table) in *code-page-tables*
         collect (cons id (invert-table table)))
   "An alist which maps IDs of Windows code pages to hash tables
 which map character codes to the corresponding octets.")
 
-(defconstant +ascii-hash+ (invert-table +ascii-table+)
+(defparameter *ascii-hash* (invert-table *ascii-table*)
   "A hash table which maps US-ASCII character codes to the
 corresponding octets.")
 
-(defconstant +koi8-r-hash+ (invert-table +koi8-r-table+)
+(defparameter *koi8-r-hash* (invert-table *koi8-r-table*)
   "A hash table which maps KOI8-R character codes to the
 corresponding octets.")
 

@@ -134,12 +134,12 @@ signals an error otherwise."
 (defun iso-8859-name-p (name)
   "Checks whether NAME \(a keyword) names one of the known
 ISO-8859 encodings."
-  (find name +iso-8859-tables+ :key #'car))
+  (find name *iso-8859-tables* :key #'car))
 
 (defun known-code-page-id-p (id)
   "Checks whether ID \(a number) denotes one of the known Windows
 code pages."
-  (and (find id +code-page-tables+ :key #'car)
+  (and (find id *code-page-tables* :key #'car)
        id))
 
 #+:lispworks

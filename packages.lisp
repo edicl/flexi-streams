@@ -35,8 +35,7 @@
 (defpackage :flexi-streams
   (:use :cl :trivial-gray-streams)
   (:nicknames :flex)  
-  (:shadow #+:lispworks :with-accessors
-           :defconstant)
+  (:shadow #+:lispworks :with-accessors)
   (:export :*default-eol-style*
            :*default-little-endian*
            :*substitution-char*

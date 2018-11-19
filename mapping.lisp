@@ -57,11 +57,6 @@ codepoints.
 See for example <http://unicode.org/glossary/#C>."
   '(mod #x110000))
 
-(defmacro defconstant (name value &optional doc)
-  "Make sure VALUE is evaluated only once \(to appease SBCL)."
-  `(cl:defconstant ,name (if (boundp ',name) (symbol-value ',name) ,value)
-     ,@(when doc (list doc))))
-
 (defun invert-table (table)
   "`Inverts' an array which maps octets to character codes to a hash
 table which maps character codes to octets."
