@@ -40,7 +40,7 @@
          char-code-limit))
 
 (defsystem :flexi-streams
-  :version "1.0.17"
+  :version "1.0.18"
   :serial t
   :description "Flexible bivalent streams for Common Lisp"
   :license "BSD-2-Clause"
