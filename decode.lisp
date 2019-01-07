@@ -1,4 +1,4 @@
-;;; -*- Mode: LISP; Syntax: COMMON-LISP; Package: FLEXI-STREAMS; Base: 10 -*-
+;;; -*- Mode: LISP; Syntax: ANSI-COMMON-LISP; Package: FLEXI-STREAMS; Base: 10 -*-
 ;;; $Header: /usr/local/cvsrep/flexi-streams/decode.lisp,v 1.35 2008/08/26 10:59:22 edi Exp $
 
 ;;; Copyright (c) 2005-2008, Dr. Edmund Weitz.  All rights reserved.
@@ -48,6 +48,11 @@ function and provides a corresponding USE-VALUE restart."
                         (when (= 1 (length line))
                           (return (list (char line 0)))))))
       (char-code char))))
+
+#+:genera
+(defvar *suppress-lf-decoding* nil
+  "Used by OCTETS-TO-CHAR-CODE to avoid prematurely decoding the octet representing
+#\Linefeed into the character code for #\Newline")
 
 (defgeneric octets-to-char-code (format reader)
   (declare #.*standard-optimize-settings*)
@@ -243,15 +248,34 @@ the form which is used to obtain the next octet."
          (declare #.*fixnum-optimize-settings*)
          (declare (function reader))
          (symbol-macrolet ((octet-getter (funcall reader)))
-           ,@(sublis '((char-decoder . octets-to-char-code))
-                     body)))
-       (define-sequence-readers (,lf-format-class) ,@body)
+           #-:genera ,@(sublis '((char-decoder . octets-to-char-code))
+			       body)
+	   #+:genera
+	   ,(with-unique-names (char-code)
+	      `(let ((,char-code ,@(sublis '((char-decoder . octets-to-char-code))
+					 body)))
+		(case ,char-code
+		  (#.+lf+ (if *suppress-lf-decoding* #.+lf+ #.(char-code #\Newline)))
+		  (#.+cr+ (if *suppress-lf-decoding* #.+cr+ #.(char-code #\Return)))
+		  (otherwise
+		    (gethash ,char-code +external-to-internal-codepoints+ ,char-code)))))))
+       (define-sequence-readers (,lf-format-class)
+	   #-:genera ,@body
+	   #+:genera
+	   ,(with-unique-names (char-code)
+	      `(let ((,char-code (progn ,@body)))
+		 (case ,char-code
+		   (#.+lf+ #.(char-code #\Newline))
+		   (otherwise
+		    (gethash ,char-code +external-to-internal-codepoints+ ,char-code))))))
        (define-sequence-readers (,cr-format-class)
          ,(with-unique-names (char-code)
             `(let ((,char-code (progn ,@body)))
                (case ,char-code
                  (#.+cr+ #.(char-code #\Newline))
-                 (otherwise ,char-code)))))
+                 (otherwise
+		  #-:genera ,char-code
+		  #+:genera (gethash ,char-code +external-to-internal-codepoints+ ,char-code))))))
        (define-sequence-readers  (,crlf-format-class)
          ,(with-unique-names (char-code next-char-code get-char-code)
             `(flet ((,get-char-code () ,@body))
@@ -263,12 +287,19 @@ the form which is used to obtain the next octet."
                         (#.+lf+ #.(char-code #\Newline))
                         ;; we saw a CR but no LF afterwards, but then the data
                         ;; ended, so we just return #\Return
-                        ((nil) +cr+)
+                        ((nil) #-:genera +cr+
+			       #+:genera #.(char-code #\Return))
                         ;; if the character we peeked at wasn't a
                         ;; linefeed character we unread its constituents
-                        (otherwise (unget (code-char ,next-char-code))
-                                   ,char-code))))
-                   (otherwise ,char-code)))))))))
+                        (otherwise
+			  (unget (code-char ,next-char-code))
+			  #-:genera ,char-code
+			  #+:genera (gethash ,char-code +external-to-internal-codepoints+
+					     ,char-code)))))
+		   (otherwise
+		     #-:genera ,char-code
+		     #+:genera (gethash ,char-code +external-to-internal-codepoints+
+					,char-code))))))))))
 
 (define-char-decoders (flexi-latin-1-format flexi-cr-latin-1-format flexi-crlf-latin-1-format)
   octet-getter)
@@ -442,16 +473,19 @@ the form which is used to obtain the next octet."
 (defmethod octets-to-char-code ((format flexi-cr-mixin) reader)
   (declare #.*fixnum-optimize-settings*)
   (declare (ignore reader))
-  (let ((char-code (call-next-method)))
+  (let* (#+:genera (*suppress-lf-decoding* t)
+	 (char-code (call-next-method)))
     (case char-code
       (#.+cr+ #.(char-code #\Newline))
+      #+:genera (#.+lf+ #.(char-code #\Linefeed))
       (otherwise char-code))))
 
 (defmethod octets-to-char-code ((format flexi-crlf-mixin) reader)
   (declare #.*fixnum-optimize-settings*)
   (declare (function *current-unreader*))
   (declare (ignore reader))
-  (let ((char-code (call-next-method)))
+  (let* (#+:genera (*suppress-lf-decoding* t)
+	 (char-code (call-next-method)))
     (case char-code
       (#.+cr+
        (let ((next-char-code (call-next-method)))
@@ -459,10 +493,11 @@ the form which is used to obtain the next octet."
            (#.+lf+ #.(char-code #\Newline))
            ;; we saw a CR but no LF afterwards, but then the data
            ;; ended, so we just return #\Return
-           ((nil) +cr+)
+           ((nil) #.(char-code #\Return))
            ;; if the character we peeked at wasn't a
            ;; linefeed character we unread its constituents
            (otherwise (funcall *current-unreader* (code-char next-char-code))
-                      char-code))))
+                      #.(char-code #\Return)))))
+      #+:genera (#.+lf+ #.(char-code #\Linefeed))
       (otherwise char-code))))
 

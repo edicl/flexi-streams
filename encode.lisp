@@ -1,4 +1,4 @@
-;;; -*- Mode: LISP; Syntax: COMMON-LISP; Package: FLEXI-STREAMS; Base: 10 -*-
+;;; -*- Mode: LISP; Syntax: ANSI-COMMON-LISP; Package: FLEXI-STREAMS; Base: 10 -*-
 ;;; $Header: /usr/local/cvsrep/flexi-streams/encode.lisp,v 1.26 2008/05/26 10:55:08 edi Exp $
 
 ;;; Copyright (c) 2005-2008, Dr. Edmund Weitz.  All rights reserved.
@@ -28,6 +28,11 @@
 ;;; SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 (in-package :flexi-streams)
+
+#+:genera
+(defvar *suppress-newline-encoding* nil
+  "Used by CHAR-TO-OCTETS to avoid prematurely encoding #\Newline as
+the octets representing a #\Linefeed")
 
 (defgeneric char-to-octets (format char writer)
   (declare #.*standard-optimize-settings*)
@@ -157,50 +162,99 @@ called more than once."
        (symbol-macrolet ((char-getter char))
          (macrolet ((octet-writer (form)
                       `(funcall writer ,form)))
-           ,@body)))
-     (define-sequence-writers (,lf-format-class) ,@body)
+	   #-:genera ,@body
+	   #+:genera
+	   ,@(sublis `((char-getter
+			 . ,(with-unique-names (char)
+			      `(let ((,char char-getter))
+				 (declare (character ,char))
+				 (if (and (char= ,char #\Newline) (not *suppress-newline-encoding*))
+				     #.(gethash #\Linefeed +internal-to-external-chars+)
+				     (gethash ,char +internal-to-external-chars+ ,char)
+				     )))))
+		     body))))
+     (define-sequence-writers (,lf-format-class)
+       #-:genera ,@body
+       #+:genera ,@(sublis `((char-getter
+			       . ,(with-unique-names (char)
+				    `(let ((,char char-getter))
+				       (declare (character ,char))
+				       (if (char= ,char #\Newline)
+					   #.(gethash #\Linefeed +internal-to-external-chars+)
+					   (gethash ,char +internal-to-external-chars+ ,char)
+					   )))))
+			   body))
      (define-sequence-writers (,cr-format-class)
        ;; modify the body so that the getter replaces a #\Newline
-       ;; with a #\Return
-       ,@(sublis `((char-getter . ,(with-unique-names (char)
-                                     `(let ((,char char-getter))
-                                        (declare (character ,char))
-                                        (if (char= ,char #\Newline)
-                                          #\Return
-                                          ,char)))))
-                 body))
+	 ;; with a #\Return
+       ,@(sublis `((char-getter
+		     . ,(with-unique-names (char)
+			  `(let ((,char char-getter))
+			     (declare (character ,char))
+			     #-:genera (if (char= ,char #\Newline)
+					   #\Return
+					   ,char)
+			     #+:genera (if (char= ,char #\Newline)
+					   #.(gethash #\Return +internal-to-external-chars+)
+					   (gethash ,char +internal-to-external-chars+
+						    ,char))))))
+                 body))	 
      (define-sequence-writers (,crlf-format-class)
        ;; modify the body so that we potentially write octets for
        ;; two characters (#\Return and #\Linefeed) - the original
-       ;; body is wrapped with the WRITE-CHAR local function
+	 ;; body is wrapped with the WRITE-CHAR local function
        ,(with-unique-names (char write-char)
           `(flet ((,write-char (,char)
                     ,@(sublis `((char-getter . ,char)) body)))
              (let ((,char char-getter))
                (declare (character ,char))
-               (cond ((char= ,char #\Newline)
-                      (,write-char #\Return)
-                      (,write-char #\Linefeed))
-                     (t (,write-char ,char)))))))))
+               #-:genera (cond ((char= ,char #\Newline)
+				(,write-char #\Return)
+				(,write-char #\Linefeed))
+			       (t
+				(,write-char ,char)))
+	       #+:genera (cond ((char= ,char #\Newline)
+				(,write-char
+				 #.(gethash #\Return +internal-to-external-chars+))
+				(,write-char
+				 #.(gethash #\Linefeed +internal-to-external-chars+)))
+			       (t
+				 (,write-char
+				  (gethash ,char +internal-to-external-chars+ ,char))))))))))
 
-(define-char-encoders (flexi-latin-1-format flexi-cr-latin-1-format  flexi-crlf-latin-1-format)
-  (let ((octet (char-code char-getter)))
-    (when (> octet 255)
-      (signal-encoding-error format "~S (code ~A) is not a LATIN-1 character." char-getter octet))
-    (octet-writer octet)))
+(define-char-encoders (flexi-latin-1-format flexi-cr-latin-1-format flexi-crlf-latin-1-format)
+  (with-accessors ((encoding-hash external-format-encoding-hash))
+      format
+    (let ((octet #-:genera (char-code char-getter)
+		 ;; Genera's internal representation of Return, Linefeed, etc.
+		 ;; use codes greater than 127.  Use the encoding hash to get
+		 ;; the correct external code
+		 #+:genera (gethash (char-code char-getter) encoding-hash)))
+      (when (> octet 255)
+	(signal-encoding-error format "~S (code ~A) is not a LATIN-1 character."
+			       char-getter octet))
+      (octet-writer octet))))
 
 (define-char-encoders (flexi-ascii-format flexi-cr-ascii-format flexi-crlf-ascii-format)
-  (let ((octet (char-code char-getter)))
-    (when (> octet 127)
-      (signal-encoding-error format "~S (code ~A) is not an ASCII character." char-getter octet))
-    (octet-writer octet)))
+  (with-accessors ((encoding-hash external-format-encoding-hash))
+      format
+    (let ((octet #-:genera (char-code char-getter)
+		 ;; Genera's internal representation of Return, Linefeed, etc.
+		 ;; use codes greater than 127.  Use the encoding hash to get
+		 ;; the correct external code
+		 #+:genera (gethash (char-code char-getter) encoding-hash)))
+      (when (> octet 127)
+	(signal-encoding-error format "~S (code ~A) is not an ASCII character."
+			       char-getter octet))
+      (octet-writer octet))))
 
 (define-char-encoders (flexi-8-bit-format flexi-cr-8-bit-format flexi-crlf-8-bit-format)
   (with-accessors ((encoding-hash external-format-encoding-hash))
       format
     (let ((octet (gethash (char-code char-getter) encoding-hash)))
       (unless octet
-        (signal-encoding-error format "~S (code ~A) is not in this encoding." char-getter octet))
+        (signal-encoding-error format "~S (code ~A) is not in this encoding."
+			       char-getter octet))
       (octet-writer octet))))
 
 (define-char-encoders (flexi-utf-8-format flexi-cr-utf-8-format flexi-crlf-utf-8-format)
@@ -269,14 +323,16 @@ called more than once."
 (defmethod char-to-octets ((format flexi-cr-mixin) char writer)
   (declare #.*fixnum-optimize-settings*)
   (declare (character char))
-  (if (char= char #\Newline)
-    (call-next-method format #\Return writer)
-    (call-next-method)))
+  (let (#+:genera (*suppress-newline-encoding* t))
+    (if (char= char #\Newline)
+	(call-next-method format #\Return writer)
+	(call-next-method))))
 
 (defmethod char-to-octets ((format flexi-crlf-mixin) char writer)
   (declare #.*fixnum-optimize-settings*)
   (declare (character char))
-  (cond ((char= char #\Newline)
-         (call-next-method format #\Return writer)
-         (call-next-method format #\Linefeed writer))
-        (t (call-next-method))))
+  (let (#+:genera (*suppress-newline-encoding* t))
+    (cond ((char= char #\Newline)
+	   (call-next-method format #\Return writer)
+	   (call-next-method format #\Linefeed writer))
+	  (t (call-next-method)))))

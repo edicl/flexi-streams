@@ -1,4 +1,4 @@
-;;; -*- Mode: LISP; Syntax: COMMON-LISP; Package: FLEXI-STREAMS-TEST; Base: 10 -*-
+;;; -*- Mode: LISP; Syntax: ANSI-COMMON-LISP; Package: FLEXI-STREAMS-TEST; Base: 10 -*-
 ;;; $Header: /usr/local/cvsrep/flexi-streams/test/test.lisp,v 1.39 2008/05/30 09:10:55 edi Exp $
 
 ;;; Copyright (c) 2006-2008, Dr. Edmund Weitz.  All rights reserved.
@@ -545,7 +545,7 @@ the external format EXTERNAL-FORMAT."
       (want-encoding-error #(#xff #xdf) :utf-16le))
     (macrolet ((want-encoding-error (input format)
                  `(with-expected-error (external-format-encoding-error)
-                    (read-flexi-line* ,input ,format))))                 
+                    (read-flexi-line* ,input ,format))))
       (when verbose
         (format t "~&UTF-8 sequences which are too short"))
       (want-encoding-error #(#xe4 #xf6 #xfc) :utf8)
@@ -574,8 +574,11 @@ the external format EXTERNAL-FORMAT."
       (want-encoding-error #(#x01 #x01 #x01 #x01 #x01) :utf-32be))
     (when verbose
       (format t "~&Handling of EOF in the middle of CRLF"))
-    (check (string= #.(string #\Return)
-                    (read-flexi-line `(,(char-code #\Return)) '(:ascii :eol-style :crlf))))
+    ;; Can't use READ-FLEXI-LINE here as #\Return == #\Newline on Genera
+    ;; so a call to READ-LINE will return an empty string
+    (check (with-input-from-sequence (in `(,flex::+cr+))
+	     (setq in (make-flexi-stream in :external-format '(:ascii :eol-style :crlf)))
+	     (string= #.(string #\Return) (read-char in))))))
     (let ((*substitution-char* #\?))
       (when verbose
         (format t "~&Fixed substitution character #\?")
@@ -636,7 +639,7 @@ the external format EXTERNAL-FORMAT."
       (check (string= "Y" (using-values (#\Y) (read-flexi-line '(#x01 #x01) :utf-32be))))
       (check (string= "Y" (using-values (#\Y) (read-flexi-line '(#x01 #x01 #x01) :utf-32be))))
       (check (string= "aY" (using-values (#\Y)
-                             (read-flexi-line `(#x00 #x00 #x00 ,(char-code #\a) #x01) :utf-32be)))))))
+					 (read-flexi-line `(#x00 #x00 #x00 ,(char-code #\a) #x01) :utf-32be)))))))
 
 (defun unread-char-tests (&key verbose)
   "Tests whether UNREAD-CHAR behaves as expected."

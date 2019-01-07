@@ -1,4 +1,4 @@
-;;; -*- Mode: LISP; Syntax: COMMON-LISP; Package: FLEXI-STREAMS; Base: 10 -*-
+;;; -*- Mode: LISP; Syntax: ANSI-COMMON-LISP; Package: FLEXI-STREAMS; Base: 10 -*-
 ;;; $Header: /usr/local/cvsrep/flexi-streams/specials.lisp,v 1.33 2008/05/25 01:40:54 edi Exp $
 
 ;;; Copyright (c) 2005-2008, Dr. Edmund Weitz.  All rights reserved.
@@ -32,6 +32,7 @@
 (defvar *standard-optimize-settings*
   '(optimize
     speed
+    (safety 0)
     (space 0)
     (debug 1)
     (compilation-speed 0))
@@ -40,6 +41,7 @@
 (defvar *fixnum-optimize-settings*
   '(optimize
     speed
+    (safety 0)
     (space 0)
     (debug 1)
     (compilation-speed 0)
@@ -47,9 +49,13 @@
   "Like *STANDARD-OPTIMIZE-SETTINGS*, but \(on LispWorks) with all
 arithmetic being fixnum arithmetic.")
 
-(defconstant +lf+ (char-code #\Linefeed))
+(defconstant +lf+
+  #-:genera (char-code #\Linefeed)
+  #+:genera (char-code (gethash #\Linefeed +internal-to-external-chars+)))
 
-(defconstant +cr+ (char-code #\Return))
+(defconstant +cr+
+  #-:genera (char-code #\Return)
+  #+:genera (char-code (gethash #\Return +internal-to-external-chars+)))
 
 (defvar *current-unreader* nil
   "A unary function which might be called to `unread' a character
@@ -138,7 +144,8 @@ long forms.")
     
 (defvar *default-eol-style*
   #+:win32 :crlf
-  #-:win32 :lf
+  #+:genera :cr
+  #-(or :win32 :genera) :lf
   "The end-of-line style used by external formats if none is
 explicitly given.  Depends on the OS the code is compiled on.")
 
