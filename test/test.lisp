@@ -717,6 +717,18 @@ the external format EXTERNAL-FORMAT."
         ;; also, the octet should be unread to the stream so that we can peek it again
         (check (= 2 (flex::peek-byte stream nil nil nil)))))))
 
+(defun in-memory-stream-tests (&key verbose)
+  (with-test-suite ("IN-MEMORY-STREAM tests" :show-progress-p (not verbose))
+    (let ((z (make-array 4)))
+      (read-sequence  z (make-in-memory-input-stream #(1 2 3 4)))
+      (check (equalp z #(1 2 3 4)))
+      (read-sequence  z (make-in-memory-input-stream '(4 3 2 1)))
+      (check (equalp z #(4 3 2 1)))
+      (read-sequence  z (make-in-memory-input-stream #(1 2 3 4) :transformer #'1+))
+      (check (equalp z #(2 3 4 5)))
+      (read-sequence  z (make-in-memory-input-stream '(1 2 3 4) :transformer #'1-))
+      (check (equalp z #(0 1 2 3))))))
+
 (defun run-all-tests (&key verbose)
   "Runs all tests for FLEXI-STREAMS and returns a true value iff all
 tests succeeded.  VERBOSE is interpreted by the individual test suites
@@ -733,5 +745,6 @@ above."
       (run-test-suite (column-tests :verbose verbose))
       (run-test-suite (make-external-format-tests :verbose verbose))
       (run-test-suite (peek-byte-tests :verbose verbose))
+      (run-test-suite (in-memory-stream-tests :verbose verbose))
       (format t "~2&~:[Some tests failed~;All tests passed~]." successp)
       successp)))

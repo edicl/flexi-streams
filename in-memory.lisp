@@ -197,9 +197,14 @@ associated vector."))
   (declare (fixnum start end))
   (with-accessors ((list list-stream-list))
       stream
-    (loop for index of-type fixnum from start below end
+    (loop with transformer = (in-memory-stream-transformer stream)
+          for index of-type fixnum from start below end
           while list
-          do (setf (elt sequence index) (pop list))
+          do (let ((elt (pop list)))
+               (setf (elt sequence index)
+                     (if transformer
+                         (funcall transformer elt)
+                         elt)))
           finally (return index))))
 
 (defmethod stream-read-byte ((stream vector-input-stream))
@@ -234,11 +239,15 @@ is reached."
   (declare (fixnum start end))
   (loop with vector-end of-type fixnum = (vector-stream-end stream)
         with vector = (vector-stream-vector stream)
+        with transformer = (in-memory-stream-transformer stream)
         for index of-type fixnum from start below end
         for vector-index of-type fixnum = (vector-stream-index stream)
         while (< vector-index vector-end)
-        do (setf (elt sequence index)
-                 (aref vector vector-index))
+        do (let ((elt (aref vector vector-index)))
+             (setf (elt sequence index)
+                   (if transformer
+                       (funcall transformer elt)
+                       elt)))
            (incf (the fixnum (vector-stream-index stream)))
         finally (return index)))
 
