@@ -238,7 +238,7 @@ is reached."
         for vector-index of-type fixnum = (vector-stream-index stream)
         while (< vector-index vector-end)
         do (setf (elt sequence index)
-                 (aref vector vector-index))
+                 (transform-octet stream (aref vector vector-index)))
            (incf (the fixnum (vector-stream-index stream)))
         finally (return index)))
 
