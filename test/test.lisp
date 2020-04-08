@@ -375,17 +375,16 @@ behave as expected."
                (when (external-format-equal external-format (make-external-format :utf8))
                  (when verbose
                    (format t "~&...reading octets"))
-                 #-:openmcl
-                 ;; FLEXI-STREAMS puts integers into the list, but OpenMCL
-                 ;; thinks they are characters...
                  (with-open-file (in full-path :element-type 'octet)
                    (let* ((in (make-flexi-stream in :external-format external-format))
                           (list (make-list octet-length)))
                      (setf (flexi-stream-element-type in) 'octet)
-                     #-:clisp
-                     (read-sequence list in)
-                     #+:clisp
-                     (ext:read-byte-sequence list in)
+                     (let ((position #-:clisp
+                                     (read-sequence list in)
+                                     #+:clisp
+                                     (ext:read-byte-sequence list in)))
+                       (check (= position
+                                 (flexi-stream-position in))))
                      (check (sequence-equal list octets))))
                  (with-open-file (in full-path :element-type 'octet)
                    (let* ((in (make-flexi-stream in :external-format external-format))

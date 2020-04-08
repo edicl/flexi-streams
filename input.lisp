@@ -206,14 +206,15 @@ others - see for example FLEXI-STREAMS-TEST::SEQUENCE-TEST."
                    (last-octet flexi-stream-last-octet)
                    (last-char-code flexi-stream-last-char-code)
                    (element-type flexi-stream-element-type)
-                   (stream flexi-stream-stream))
+                   (stream flexi-stream-stream)
+                   (position flexi-stream-position))
       flexi-input-stream
     (when (>= start end)
       (return-from stream-read-sequence start))
-    (when (or (subtypep (etypecase sequence
-                          (vector (array-element-type sequence))
-                          (list t))
-                        'integer)
+    (when (or (typep sequence
+                     '(and vector
+                       (not string)
+                       (not (vector t))))
               (and (not (stringp sequence))
                    (type-equal element-type 'octet)))
       ;; if binary data is requested, just read from the underlying
@@ -230,6 +231,7 @@ others - see for example FLEXI-STREAMS-TEST::SEQUENCE-TEST."
         (when (> index start)
           (setq last-char-code nil
                 last-octet (elt sequence (1- index))))
+        (incf position (- index start))
         (return-from stream-read-sequence index)))
     ;; otherwise hand over to the external format to do the work
     (read-sequence* external-format flexi-input-stream sequence start end)))
