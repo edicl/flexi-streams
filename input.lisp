@@ -246,9 +246,11 @@ being used by the stream."
       stream
     (unless last-char-code
       (error 'flexi-stream-error
+             :stream stream
              :format-control "No character to unread from this stream \(or external format has changed or last reading operation was binary)."))
     (unless (= (char-code char) last-char-code)
       (error 'flexi-stream-error
+             :stream stream
              :format-control "Last character read (~S) was different from ~S."
              :format-arguments (list (code-char last-char-code) char)))
     (unread-char% char stream)
@@ -266,9 +268,11 @@ READ-BYTE."
       flexi-input-stream
     (unless last-octet
       (error 'flexi-stream-error
+             :stream stream
              :format-control "No byte to unread from this stream \(or last reading operation read a character)."))
     (unless (= byte last-octet)
       (error 'flexi-stream-error
+             :stream stream
              :format-control "Last byte read was different from #x~X."
              :format-arguments (list byte)))
     (setq last-octet nil)
