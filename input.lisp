@@ -268,11 +268,11 @@ READ-BYTE."
       flexi-input-stream
     (unless last-octet
       (error 'flexi-stream-error
-             :stream stream
+             :stream flexi-input-stream
              :format-control "No byte to unread from this stream \(or last reading operation read a character)."))
     (unless (= byte last-octet)
       (error 'flexi-stream-error
-             :stream stream
+             :stream flexi-input-stream
              :format-control "Last byte read was different from #x~X."
              :format-arguments (list byte)))
     (setq last-octet nil)
