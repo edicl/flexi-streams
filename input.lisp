@@ -207,7 +207,8 @@ others - see for example FLEXI-STREAMS-TEST::SEQUENCE-TEST."
                    (last-char-code flexi-stream-last-char-code)
                    (element-type flexi-stream-element-type)
                    (stream flexi-stream-stream)
-                   (position flexi-stream-position))
+                   (position flexi-stream-position)
+                   (bound flexi-stream-bound))
       flexi-input-stream
     (when (>= start end)
       (return-from stream-read-sequence start))
@@ -220,7 +221,10 @@ others - see for example FLEXI-STREAMS-TEST::SEQUENCE-TEST."
       ;; if binary data is requested, just read from the underlying
       ;; stream directly and skip the rest (but flush octet stack
       ;; first)
-      (let ((index start))
+      (let ((index start)
+            (end (if bound
+                     (min end (+ start (- bound position)))
+                     end)))
         (declare (fixnum index))
         (when octet-stack
           (replace sequence octet-stack :start1 start :end1 end)
