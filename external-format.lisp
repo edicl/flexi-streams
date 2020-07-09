@@ -197,6 +197,21 @@ the line-end character."))
 UTF-16 encoding with big-endian byte ordering /and/ have the sequence
 #\Return #\Linefeed as the line-end character."))
 
+(defclass flexi-gbk-format (external-format)
+     ()
+  (:documentation "Special class for external formats which use the
+gbk encoding."))
+
+(defclass flexi-cr-gbk-format (flexi-cr-mixin flexi-gbk-format)
+     ()
+  (:documentation "Special class for external formats which use the
+gbk encoding /and/ have #\Return as the line-end character."))
+
+(defclass flexi-crlf-gbk-format (flexi-crlf-mixin flexi-gbk-format)
+     ()
+  (:documentation "Special class for external formats which use the
+gbk encoding /and/ have the sequence #\Return #\Linefeed as the 
+line-end character."))
 (defclass flexi-utf-8-format (external-format)
   ()
   (:documentation "Special class for external formats which use the
@@ -272,6 +287,10 @@ external format."
                         (:crlf (if little-endian
                                  'flexi-crlf-utf-16-le-format
                                  'flexi-crlf-utf-16-be-format))))
+             (:gbk (ecase eol-style
+                     (:lf 'flexi-gbk-format)
+                     (:cr 'flexi-cr-gbk-format)
+                     (:crlf 'flexi-crlf-gbk-format)))
              (:utf-32 (ecase eol-style
                         (:lf (if little-endian
                                'flexi-utf-32-le-format
