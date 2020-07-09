@@ -252,6 +252,28 @@ called more than once."
                (write-word (logior* #xd800 (ash* char-code -10)))
                (write-word (logior* #xdc00 (logand* #x03ff char-code))))))))
 
+(define-char-encoders (flexi-gbk-format flexi-cr-gbk-format flexi-crlf-gbk-format)
+  (let ((octet (char-code char-getter)))
+    (if (<= octet #x7f)
+      (octet-writer octet)
+      (flet ((write-word (word)
+               (octet-writer (ash* (logand* #xff00 word) -8))
+               (octet-writer (logand* #x00ff word))))
+        (declare (inline write-word))
+        (declare (type char-code-integer octet))
+        (cond ((= octet #x20ac)
+               (octet-writer #x80))
+              ((= octet #xf8f5)
+               (octet-writer #xff))
+              (t
+               (let ((code (get-multibyte-mapper (if (< octet #x100)
+                                                   *ucs-to-gbk-special-table*
+                                                   *ucs-to-gbk-table*)
+                                                 octet)))
+                 (if code
+                   (write-word code)
+                   (signal-encoding-error format "~S (code ~A) is not in this encoding."
+                                          char-getter octet)))))))))
 (define-char-encoders (flexi-utf-32-le-format flexi-cr-utf-32-le-format flexi-crlf-utf-32-le-format)
   (let ((char-code (char-code char-getter)))
     (octet-writer (logand* #x00ff char-code))

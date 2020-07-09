@@ -118,6 +118,7 @@ defined.")
     ("tilton" (:utf8 :ascii))
     ("hebrew" (:utf8 :latin8))
     ("russian" (:utf8 :koi8r))
+    ("xjt" (:gbk))
     ("unicode_demo" (:utf8 :ucs2 :ucs4)))
   "A list of test files where each entry consists of the name
 prefix and a list of encodings.")
@@ -135,6 +136,7 @@ endianness."
                 (:cp1252 '(:code-page :id 1252))
                 (:koi8r '(:koi8-r))
                 (:utf8 '(:utf-8))
+                (:gbk '(:gbk))
                 (:ucs2 '(:utf-16))
                 (:ucs4 '(:utf-32))))
         (endianp (member symbol '(:ucs2 :ucs4))))
@@ -637,6 +639,7 @@ the external format EXTERNAL-FORMAT."
       (check (string= "R" (using-values (#\R) (read-flexi-line '(#xd8 #x01) :utf-16be))))
       (check (string= "T" (using-values (#\T) (read-flexi-line '(#xd8 #x01 #xdb #xff) :utf-16be))))
       (check (string= "T" (using-values (#\T) (read-flexi-line* #(#xd8 #x01 #xdb #xff) :utf-16be))))
+      (check (string= "T" (using-values (#\T) (read-flexi-line* #(#xd8 #x01) :gbk))))
       (when verbose
         (format t "~&EOF in the middle of a 4-octet sequence in UTF-32"))
       (check (string= "Y" (using-values (#\Y) (read-flexi-line '(#x01) :utf-32le))))

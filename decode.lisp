@@ -406,6 +406,25 @@ the form which is used to obtain the next octet."
                       (logand* #b1111111111 next-word)
                       #x10000)))
                 (t word)))))))
+(define-char-decoders (flexi-gbk-format flexi-cr-gbk-format flexi-crlf-gbk-format)
+  (when-let (octet octet-getter)
+    (cond ((<= (the octet octet) #x7f) octet)
+          ((=  (the octet octet) #x80) #x20ac)
+          ((=  (the octet octet) #xff) #xf8f5)
+          (t (let ((next-byte octet-getter))
+               (if (null next-byte)
+                 (recover-from-encoding-error format
+                                              "End of data while in GBK sequence.")
+                 (let ((word (+ (ash* (the octet octet) 8)
+                                (the octet next-byte))))
+                   (declare (type (unsigned-byte 16) word))
+                   (let ((octet (or (get-multibyte-mapper *gbk-to-ucs-special-table* word)
+                                    (get-multibyte-mapper *gbk-to-ucs-table* word))))
+                     (if octet
+                       octet
+                       (recover-from-encoding-error format
+                                                    "No character which corresponds to octet #x~X."
+                                                    word))))))))))
 
 (define-char-decoders (flexi-utf-32-le-format flexi-cr-utf-32-le-format flexi-crlf-utf-32-le-format)
   (let (first-octet-seen)

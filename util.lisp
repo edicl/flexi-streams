@@ -204,3 +204,22 @@ Returns T if it succeeds, otherwise NIL."
 (defmacro ash* (integer count)
   "Solely for optimization purposes.  Some Lisps need it, some don't."
   `(the fixnum (ash ,integer ,count)))
+(defun get-multibyte-mapper (table code)
+  "this function is borrowed from sbcl's source file \"/src/code/external-formats/mb-util.lisp\",
+it search char code in \"table\" with specified \"code\""
+
+  (declare (optimize speed (safety 0))
+           (type (array * (* 2)) table)
+           (type fixnum code))
+  (labels ((recur (start end)
+             (declare (type fixnum start end))
+             (let* ((m (ash (+ start end) -1))
+                    (x (aref table m 0)))
+               (declare (type fixnum m x))
+               (cond ((= x code)
+                      (aref table m 1))
+                     ((and (< x code) (< m end))
+                      (recur (1+ m) end))
+                     ((and (> x code) (> m start))
+                      (recur start (1- m)))))))
+    (recur 0 (1- (array-dimension table 0)))))

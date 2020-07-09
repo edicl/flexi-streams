@@ -49,6 +49,7 @@
                (:file "ascii")
                (:file "koi8-r")
                (:file "iso-8859")
+               (:file "enc-cn-tbl")
                (:file "code-pages")
                (:file "specials")
                (:file "util")
