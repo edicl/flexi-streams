@@ -1,3 +1,7 @@
+Version 1.0.19
+2020-07-09
+GBK support (Jingtao Xu)
+
 Version 1.0.18
 2018-12-12
 peek-byte for in-memory streams (Christopher Eames)
