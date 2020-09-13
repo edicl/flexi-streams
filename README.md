@@ -8,5 +8,5 @@ read and write character data in various single- or multi-octet
 encodings which can be changed on the fly. It also supplies in-memory
 binary streams which are similar to string streams.
 
-Complete documentation for CL-INTERPOL can be found in the `docs`
+Complete documentation can be found in the `docs`
 directory or at the [project documentation site](https://edicl.github.io/flexi-streams/).
