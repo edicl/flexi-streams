@@ -1,5 +1,4 @@
 ;;; -*- Mode: LISP; Syntax: COMMON-LISP; Package: FLEXI-STREAMS; Base: 10 -*-
-;;; $Header: /usr/local/cvsrep/flexi-streams/ascii.lisp,v 1.9 2008/05/18 21:32:15 edi Exp $
 
 ;;; Copyright (c) 2005-2008, Dr. Edmund Weitz.  All rights reserved.
 
