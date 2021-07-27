@@ -310,6 +310,7 @@ The following encodings are currently supported by FLEXI-STREAMS:
 <li><a href="http://en.wikipedia.org/wiki/UTF-32">UTF-32</a> (denoted by the keyword <code>:UTF-32</code>),
 <li>all <a href="http://czyborra.com/charsets/iso8859.html">ISO 8859</a> character sets (denoted by keywords like <code>:ISO-8859-15</code>),
 <li><a href="http://en.wikipedia.org/wiki/KOI8-R">KOI8-R</a> (denoted by the keyword <code>:KOI8-R</code>),
+<li><a href="https://en.wikipedia.org/wiki/Mac_OS_Roman">MAC-ROMAN</a> (denoted by the keyword <code>:MAC-ROMAN</code>),
 <li>a couple
 of <a href="http://czyborra.com/charsets/codepages.html">Windows code
 pages</a> (denoted by the keyword <code>:CODE-PAGE</code> and an
@@ -358,6 +359,8 @@ A couple of alternative names are allowed that are listed below:
 <tr><td rowspan=2 valign=top><code>:CODE-PAGE</code></td><td><code>:CODEPAGE</code></td></tr>
 <tr><td><code>WIN32:CODE-PAGE<br>(only on <a href="http://www.lispworks.com/products/lww.html">LWW</a>)</code></td></tr>
 <tr><td><code>:KOI8-R</code></td><td><code>:KOI8R</code></td></tr>
+<tr><td rowspan=2 valign=top><code>:MAC-ROMAN</code></td><td><code>:MAC</code></td></tr>
+<tr><td><code>:MACINTOSH</code></td></tr>
 <tr><td><code>:US-ASCII</code></td><td><code>:ASCII</code></td></tr>
 </table>
 <p>
@@ -450,10 +453,19 @@ object</a>.  <code><i>name</i></code> is a
 symbol, <code><i>eol-style</i></code> is one of the
 keywords <code>:CR</code>, <code>:LF</code>, or <code>:CRLF</code>,
 and <code><i>little-endian</i></code> is
-a <a
-href="http://www.lispworks.com/documentation/HyperSpec/Body/26_glo_g.htm#generalized_boolean">generalized
-boolean</a>.  The default value for <code><i>eol-style</i></code> is the value of <a href="#*default-eol-style*"><code>*DEFAULT-EOL-STYLE*</code></a> except for Windows code pages where it is <code>:CRLF</code>.  The default value
-for <code><i>little-endian</i></code> is the value of <a href="#*default-little-endian*"><code>*DEFAULT-LITTLE-ENDIAN*</code></a> - this value is ignored unless <code><i>name</i></code> denotes one of UTF-16 or UTF-32.
+a <a href="http://www.lispworks.com/documentation/HyperSpec/Body/26_glo_g.htm#generalized_boolean">generalized
+boolean</a>.
+
+<p>
+The default value for <code><i>eol-style</i></code> is the value of <a href="#*default-eol-style*"><code>*DEFAULT-EOL-STYLE*</code></a>.
+For Windows code pages, the default style is <code>:CRLF</code>. For <code>:MAC-ROMAN</code>, the default EOL
+style is <code>:CR</code>.
+
+<p>
+The default value for <code><i>little-endian</i></code> is the value of <a href="#*default-little-endian*"><code>*DEFAULT-LITTLE-ENDIAN*</code></a>
+- this value is ignored unless <code><i>name</i></code> denotes one of UTF-16 or UTF-32.
+
+<p>
 <code><i>id</i></code> must be an integer denoting a Windows code page
 known by FLEXI-STREAMS if <code><i>name</i></code>
 is <code>:CODE-PAGE</code> or <code>WIN32:CODE-PAGE</code>, otherwise
