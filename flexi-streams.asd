@@ -48,6 +48,7 @@
                (:file "mapping")
                (:file "ascii")
                (:file "koi8-r")
+               (:file "mac")
                (:file "iso-8859")
                (:file "enc-cn-tbl")
                (:file "code-pages")
