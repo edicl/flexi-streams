@@ -314,9 +314,12 @@ EXTERNAL-FORMAT."
   (let* ((real-name (normalize-external-format-name name))
          (initargs
           (cond ((or (iso-8859-name-p real-name)
-		     (koi8-r-name-p real-name)
+                     (koi8-r-name-p real-name)
                      (ascii-name-p real-name))
                  (list :eol-style (or eol-style *default-eol-style*)))
+                ((mac-roman-name-p real-name)
+                 ;; Default EOL style for mac-roman is :CR.
+                 (list :eol-style (or eol-style :cr)))
                 ((code-page-name-p real-name)
                  (list :id (or (known-code-page-id-p id)
                                (error 'external-format-error
@@ -374,7 +377,8 @@ object."
          ;; for non-8-bit encodings the endianess must be the same
          (or code-page-name-p
              (ascii-name-p name1)
-	     (koi8-r-name-p name1)
+	         (koi8-r-name-p name1)
+             (mac-roman-name-p name1)
              (iso-8859-name-p name1)
              (eq name1 :utf-8)
              (eq (not (external-format-little-endian ef1))
