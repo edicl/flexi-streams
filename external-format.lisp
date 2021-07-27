@@ -377,7 +377,7 @@ object."
          ;; for non-8-bit encodings the endianess must be the same
          (or code-page-name-p
              (ascii-name-p name1)
-	         (koi8-r-name-p name1)
+             (koi8-r-name-p name1)
              (mac-roman-name-p name1)
              (iso-8859-name-p name1)
              (eq name1 :utf-8)
