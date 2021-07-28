@@ -1,6 +1,6 @@
 ;;; -*- Mode: LISP; Syntax: COMMON-LISP; Package: FLEXI-STREAMS; Base: 10 -*-
 
-;;; Copyright (c) 2005-2008, Dr. Edmund Weitz.  All rights reserved.
+;;; Copyright (c) 2021, Felix Lange.  All rights reserved.
 
 ;;; Redistribution and use in source and binary forms, with or without
 ;;; modification, are permitted provided that the following conditions
