@@ -243,6 +243,8 @@ external format."
                (values +ascii-hash+ +ascii-table+))
               ((koi8-r-name-p name)
                (values +koi8-r-hash+ +koi8-r-table+))
+              ((mac-roman-name-p name)
+               (values +mac-roman-hash+ +mac-roman-table+))
               ((iso-8859-name-p name)
                (values (cdr (assoc name +iso-8859-hashes+ :test #'eq))                       
                        (cdr (assoc name +iso-8859-tables+ :test #'eq))))
@@ -266,6 +268,7 @@ external format."
            (:cr 'flexi-cr-latin-1-format)
            (:crlf 'flexi-crlf-latin-1-format)))
         ((or (koi8-r-name-p real-name)
+             (mac-roman-name-p real-name)
              (iso-8859-name-p real-name)
              (code-page-name-p real-name))
          (ecase eol-style
@@ -311,9 +314,12 @@ EXTERNAL-FORMAT."
   (let* ((real-name (normalize-external-format-name name))
          (initargs
           (cond ((or (iso-8859-name-p real-name)
-		     (koi8-r-name-p real-name)
+                     (koi8-r-name-p real-name)
                      (ascii-name-p real-name))
                  (list :eol-style (or eol-style *default-eol-style*)))
+                ((mac-roman-name-p real-name)
+                 ;; Default EOL style for mac-roman is :CR.
+                 (list :eol-style (or eol-style :cr)))
                 ((code-page-name-p real-name)
                  (list :id (or (known-code-page-id-p id)
                                (error 'external-format-error
@@ -371,7 +377,8 @@ object."
          ;; for non-8-bit encodings the endianess must be the same
          (or code-page-name-p
              (ascii-name-p name1)
-	     (koi8-r-name-p name1)
+             (koi8-r-name-p name1)
+             (mac-roman-name-p name1)
              (iso-8859-name-p name1)
              (eq name1 :utf-8)
              (eq (not (external-format-little-endian ef1))
@@ -390,6 +397,7 @@ back to MAKE-EXTERNAL-FORMAT to create an equivalent object."
         (eol-style (external-format-eol-style external-format)))
     (cond ((or (ascii-name-p name)
                (koi8-r-name-p name)
+               (mac-roman-name-p name)
                (iso-8859-name-p name)
                (eq name :utf-8))
            (list name :eol-style eol-style))

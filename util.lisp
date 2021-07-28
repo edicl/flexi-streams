@@ -127,6 +127,10 @@ signals an error otherwise."
   "Checks whether NAME is the keyword :KOI8-R."
   (eq name :koi8-r))
 
+(defun mac-roman-name-p (name)
+  "Checks whether NAME is the keyword :MAC-ROMAN."
+  (eq name :mac-roman))
+
 (defun code-page-name-p (name)
   "Checks whether NAME is the keyword :CODE-PAGE."
   (eq name :code-page))

@@ -71,6 +71,9 @@ suitable functional object when this function is called.")
     (:ucs-4 . :utf-32)
     (:ascii . :us-ascii)
     (:koi8r . :koi8-r)
+    (:mac . :mac-roman)
+    (:macintosh . :mac-roman)
+    (:macos-roman . :mac-roman)
     (:latin-1 . :iso-8859-1)
     (:latin1 . :iso-8859-1)
     (:latin-2 . :iso-8859-2)
@@ -174,6 +177,10 @@ corresponding octets.")
 
 (defconstant +koi8-r-hash+ (invert-table +koi8-r-table+)
   "A hash table which maps KOI8-R character codes to the
+corresponding octets.")
+
+(defconstant +mac-roman-hash+ (invert-table +mac-roman-table+)
+  "A hash table which maps MAC-ROMAN character codes to the
 corresponding octets.")
 
 (defconstant +buffer-size+ 8192
