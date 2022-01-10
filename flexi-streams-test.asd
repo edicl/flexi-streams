@@ -1,5 +1,4 @@
 ;;; -*- Mode: LISP; Syntax: COMMON-LISP; Package: CL-USER; Base: 10 -*-
-;;; $Header: /usr/local/cvsrep/flexi-streams/flexi-streams.asd,v 1.79 2008/08/26 10:59:22 edi Exp $
 
 ;;; Copyright (c) 2005-2008, Dr. Edmund Weitz.  All rights reserved.
 
@@ -34,41 +33,9 @@
 
 (in-package :flexi-streams-system)
 
-;;; Maybe it can be made work for some encodings
-(when (<= char-code-limit 65533)
-  (error "flexi-streams doesn't work on implementations with CHAR-CODE-LIMIT (~a) less than 65533"
-         char-code-limit))
-
-(defsystem :flexi-streams
-  :version "1.0.19"
-  :serial t
-  :description "Flexible bivalent streams for Common Lisp"
-  :license "BSD-2-Clause"
-  :components ((:file "packages")
-               (:file "mapping")
-               (:file "ascii")
-               (:file "koi8-r")
-               (:file "mac")
-               (:file "iso-8859")
-               (:file "enc-cn-tbl")
-               (:file "code-pages")
-               (:file "specials")
-               (:file "util")
-               (:file "conditions")
-               (:file "external-format")
-               (:file "length")
-               (:file "encode")
-               (:file "decode")
-               (:file "in-memory")
-               (:file "stream")
-               #+:lispworks (:file "lw-char-stream")
-               (:file "output")
-               (:file "input")
-               (:file "io")
-               (:file "strings"))
-  :depends-on (:trivial-gray-streams))
-
-(defmethod perform ((o test-op) (c (eql (find-system 'flexi-streams))))
-  (operate 'load-op 'flexi-streams-test)
-  (funcall (intern (symbol-name :run-all-tests)
-                   (find-package :flexi-streams-test))))
+(defsystem :flexi-streams-test
+  :components ((:module "test"
+                        :serial t
+                        :components ((:file "packages")
+                                     (:file "test"))))
+  :depends-on (:flexi-streams))
