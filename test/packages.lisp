@@ -38,4 +38,4 @@
                 :normalize-external-format
                 :+name-map+
                 :+shortcut-map+)
-  (:export :run-all-tests))
+  (:export #:run-all-tests))
