@@ -31,7 +31,7 @@
 
 (defpackage :flexi-streams-test
   (:use :cl :flexi-streams)
-  (:import-from #:flexi-streams
+  (:import-from :flexi-streams
                 #:with-unique-names
                 #:with-rebinding
                 #:char*
