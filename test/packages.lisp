@@ -31,11 +31,11 @@
 
 (defpackage :flexi-streams-test
   (:use :cl :flexi-streams)
-  (:import-from :flexi-streams
-                :with-unique-names
-                :with-rebinding
-                :char*
-                :normalize-external-format
-                :+name-map+
-                :+shortcut-map+)
+  (:import-from #:flexi-streams
+                #:with-unique-names
+                #:with-rebinding
+                #:char*
+                #:normalize-external-format
+                #:+name-map+
+                #:+shortcut-map+)
   (:export #:run-all-tests))
