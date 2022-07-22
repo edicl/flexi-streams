@@ -29,7 +29,7 @@
 
 (in-package :cl-user)
 
-(unless (find-symbol (symbol-name :stream-file-position) :trivial-gray-streams)
+(unless (find-symbol "STREAM-FILE-POSITION" :trivial-gray-streams)
   (error "You need a newer version of TRIVIAL-GRAY-STREAMS."))
 
 (defpackage :flexi-streams
