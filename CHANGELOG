@@ -1,3 +1,7 @@
+Version 1.0.20
+2024-04-27
+Add support for mac-roman encoding (Felix Lange)
+
 Version 1.0.19
 2020-07-09
 GBK support (Jingtao Xu)
